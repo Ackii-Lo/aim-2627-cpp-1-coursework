@@ -18,8 +18,46 @@ namespace aim::q6 {
 struct Target { int id; int x; int y; int hp; bool visible; };
 
 // BEGIN IMPLEMENTATION
-int select_target(const std::vector<Target>& targets, int max_range) { throw std::runtime_error("TODO"); }
-// END IMPLEMENTATION
+// aim-cpp-cw-known
+int select_target(const std::vector<Target>& targets, int max_range) {
+    if(max_range<0)return -1;
+    long long m=max_range;
+    long long limit=m*m;
+    int best_id = -1;
+    long long best_d2 = 0;
+    int best_hp=0;
+    for(const Target&t: targets){
+        if(!t.visible || t.hp<=0){
+            continue;
+        }
+        long long dx=t.x;
+        long long dy=t.y;
+        long long d2=dx*dx+dy*dy;
+        if(d2>limit){
+            continue;
+        }
+        bool better =false;
+        if (best_id==-1){
+            better=true;
+        }else if(t.hp<best_hp){
+            better=true;
+        }else if(t.hp==best_hp){
+            if (d2<best_d2){
+                better=true;
+            }else if(d2==best_d2&&t.id<best_id){
+                better=true;
+            }
+            
+        }
+        if(better){
+            best_id=t.id;
+            best_hp=t.hp;
+            best_d2=d2;
+        }
+
+    }
+    return best_id;
+}
 }
 
 #define CHECK(...) do { if (!(__VA_ARGS__)) throw std::runtime_error("check failed"); } while(false)
