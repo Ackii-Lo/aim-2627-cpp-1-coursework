@@ -19,7 +19,50 @@ struct Telemetry { int id; int hp; };
 struct Summary { int valid; int duplicate; int invalid; long long total_hp; std::vector<int> ids; };
 
 // BEGIN IMPLEMENTATION
-Summary summarize(const std::vector<Telemetry>& frames) { throw std::runtime_error("TODO"); }
+// aim-cpp-cw-known
+Summary summarize(const std::vector<Telemetry>& frames) {
+    Summary s;
+    s.valid = 0;
+    s.duplicate = 0;
+    s.invalid = 0;
+    s.total_hp = 0;
+
+    const int ID_COUNT = 10000;
+    std::vector<bool> seen(ID_COUNT, false);
+
+    for (std::size_t i = 0; i < frames.size(); ++i) {
+        int id = frames[i].id;
+        int hp = frames[i].hp;
+
+        if (id < 0 || id >= ID_COUNT || hp < -1000 || hp > 1000) {
+            ++s.invalid;
+            continue;
+        }
+        if (seen[id]) {
+            ++s.duplicate;
+            continue;
+        }
+
+        seen[id] = true;
+        ++s.valid;
+
+        int clamped = hp;
+        if (clamped < 0) {
+            clamped = 0;
+        }
+        if (clamped > 100) {
+            clamped = 100;
+        }
+        s.total_hp += clamped;
+    }
+
+    for (int id = 0; id < ID_COUNT; ++id) {
+        if (seen[id]) {
+            s.ids.push_back(id);
+        }
+    }
+    return s;
+}
 // END IMPLEMENTATION
 }
 
