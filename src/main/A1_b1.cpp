@@ -18,7 +18,45 @@ namespace aim::b1 {
 
 
 // BEGIN IMPLEMENTATION
-bool parse_i32(const std::string& text, int& output) { throw std::runtime_error("TODO"); }
+// aim-cpp-cw-known
+bool parse_i32(const std::string& text, int& output) {
+    if (text.empty()) {
+        return false;
+    }
+
+    std::size_t i = 0;
+    bool negative = false;
+    if (text[0] == '+' || text[0] == '-') {
+        negative = (text[0] == '-');
+        i = 1;
+    }
+    if (i == text.size()) {
+        return false;
+    }
+
+    // 正数上限 2147483647，负数可到 -2147483648，两者不对称。
+    const long long limit = negative ? 2147483648LL : 2147483647LL;
+
+    long long value = 0;
+    for (; i < text.size(); ++i) {
+        const char c = text[i];
+        if (c < '0' || c > '9') {
+            return false;
+        }
+        const int digit = c - '0';
+        // 累加之前先判断是否会越界，越界直接拒绝，不做"先算坏再检查"。
+        if (value > (limit - digit) / 10) {
+            return false;
+        }
+        value = value * 10 + digit;
+    }
+
+    if (negative) {
+        value = -value;
+    }
+    output = static_cast<int>(value);
+    return true;
+}
 // END IMPLEMENTATION
 }
 
