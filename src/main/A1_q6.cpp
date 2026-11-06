@@ -58,6 +58,7 @@ int select_target(const std::vector<Target>& targets, int max_range) {
     }
     return best_id;
 }
+// END IMPLEMENTATION
 }
 
 #define CHECK(...) do { if (!(__VA_ARGS__)) throw std::runtime_error("check failed"); } while(false)
