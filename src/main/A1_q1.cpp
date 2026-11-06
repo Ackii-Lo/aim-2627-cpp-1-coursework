@@ -14,26 +14,118 @@
 #include <vector>
 
 // Assessment 01 Q1; see 题面.pdf.
-namespace aim::q1 {
+namespace aim::q1
+{
 
+    // BEGIN IMPLEMENTATION
+    long long ratio(long long hp, long long max_hp)
+    {
+        if (max_hp <= 0)
+        {
+            return -1;
+        }
+        if (hp < 0)
+        {
+            hp = 0;
+        }
+        if (hp > max_hp)
+        {
+            hp = max_hp;
+        }
+        return hp * 100 / max_hp;
+    }
+    std::string report(int id, long long hp, long long max_hp, int battery)
+    {
+        std::string str_id = "ID=" + std::to_string(id) + ";";
+        std::string ratio_hp;
+        if (ratio(hp, max_hp) == -1)
+        {
+            ratio_hp = "INVALID";
+        }
+        else
+        {
+            ratio_hp = std::to_string(ratio(hp, max_hp));
+        }
 
-// BEGIN IMPLEMENTATION
-long long ratio(long long hp, long long max_hp) { throw std::runtime_error("TODO"); }
-std::string report(int id, long long hp, long long max_hp, int battery) { throw std::runtime_error("TODO"); }
-// END IMPLEMENTATION
+        std::string str_hp = "HP=" + ratio_hp + ";";
+        if (battery < 0)
+        {
+            battery = 0;
+        }
+        if (battery > 100)
+        {
+            battery = 100;
+        }
+        std::string str_bat = "BAT=" + std::to_string(battery) + ";";
+        std::string state;
+        if (battery >= 60)
+        {
+            state = "OK";
+        }
+        else if (battery < 20)
+        {
+            state = "LOW";
+        }
+        else
+        {
+            state = "WARNING";
+        }
+        std::string str_state = "STATE=" + state;
+        return str_id + str_hp + str_bat + str_state;
+    }
+    // END IMPLEMENTATION
 }
 
-#define CHECK(...) do { if (!(__VA_ARGS__)) throw std::runtime_error("check failed"); } while(false)
-#define EXPECT_INVALID(...) do { bool caught=false; try { (void)(__VA_ARGS__); } catch(const std::invalid_argument&) { caught=true; } CHECK(caught); } while(false)
-#define EXPECT_RANGE(...) do { bool caught=false; try { (void)(__VA_ARGS__); } catch(const std::out_of_range&) { caught=true; } CHECK(caught); } while(false)
+#define CHECK(...)                                    \
+    do                                                \
+    {                                                 \
+        if (!(__VA_ARGS__))                           \
+            throw std::runtime_error("check failed"); \
+    } while (false)
+#define EXPECT_INVALID(...)                   \
+    do                                        \
+    {                                         \
+        bool caught = false;                  \
+        try                                   \
+        {                                     \
+            (void)(__VA_ARGS__);              \
+        }                                     \
+        catch (const std::invalid_argument &) \
+        {                                     \
+            caught = true;                    \
+        }                                     \
+        CHECK(caught);                        \
+    } while (false)
+#define EXPECT_RANGE(...)                 \
+    do                                    \
+    {                                     \
+        bool caught = false;              \
+        try                               \
+        {                                 \
+            (void)(__VA_ARGS__);          \
+        }                                 \
+        catch (const std::out_of_range &) \
+        {                                 \
+            caught = true;                \
+        }                                 \
+        CHECK(caught);                    \
+    } while (false)
 
 using namespace aim::q1;
-int main() {
-    try {
-        { CHECK(ratio(2,3)==66); }
-        { CHECK(report(7,2,3,20)=="ID=7;HP=66;BAT=20;STATE=WARNING"); }
+int main()
+{
+    try
+    {
+        {
+            CHECK(ratio(2, 3) == 66);
+        }
+        {
+            CHECK(report(7, 2, 3, 20) == "ID=7;HP=66;BAT=20;STATE=WARNING");
+        }
         std::cout << "PUBLIC 2/2\n";
-    } catch(const std::exception& e) {
+    }
+    catch (const std::exception &e)
+    {
         std::cerr << e.what() << "\n";
         return 1;
     }
