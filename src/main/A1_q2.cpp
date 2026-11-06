@@ -18,7 +18,52 @@ namespace aim::q2 {
 struct LabelEdit { std::string from; std::string to; };
 
 // BEGIN IMPLEMENTATION
-std::string edit_labels(std::string labels, const std::vector<LabelEdit>& edits) { throw std::runtime_error("TODO"); }
+// aim-cpp-cw-known
+std::string edit_labels(std::string labels, const std::vector<LabelEdit>& edits) {
+    for (std::size_t i = 0; i < edits.size(); ++i) {
+        const std::string& from = edits[i].from;
+        const std::string& to = edits[i].to;
+
+        if (from.empty()) {
+            if (to.empty()) {
+                continue;
+            }
+            if (labels.empty()) {
+                labels = to;
+            } else {
+                labels += ',';
+                labels += to;
+            }
+            continue;
+        }
+
+        std::size_t cur = 0;
+        while (true) {
+            std::size_t comma = labels.find(',', cur);
+            std::size_t end = (comma == std::string::npos) ? labels.size() : comma;
+
+            if (labels.compare(cur, end - cur, from) == 0) {
+                std::size_t seglen = end - cur;
+                if (!to.empty()) {
+                    labels.replace(cur, seglen, to);
+                } else if (comma != std::string::npos) {
+                    labels.erase(cur, seglen + 1);
+                } else if (cur > 0) {
+                    labels.erase(cur - 1, seglen + 1);
+                } else {
+                    labels.erase(cur, seglen);
+                }
+                break;
+            }
+
+            if (comma == std::string::npos) {
+                break;
+            }
+            cur = comma + 1;
+        }
+    }
+    return labels;
+}
 // END IMPLEMENTATION
 }
 
